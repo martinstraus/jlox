@@ -94,6 +94,8 @@ class Scanner {
             default:
                 if (isDigit(c)) {
                     number();
+                } else if (isAlpha(c)) {
+                    identifier();
                 } else {
                     Lox.error(line, String.format("Unexpected character '%c'", c));
                 }
@@ -134,7 +136,24 @@ class Scanner {
             }
         }
         double value = Double.parseDouble(script.substring(start, current));
-        addToken(NUMBER,value);
+        addToken(NUMBER, value);
+    }
+
+    private boolean isAlpha(char c) {
+        return (c >= 'a' && c <= 'z')
+            || (c >= 'A' && c <= 'Z')
+            || c == '_';
+    }
+    
+    private boolean isAlphanumeric(char c) {
+        return isAlpha(c) || isDigit(c);
+    }
+    
+    private void identifier() {
+        while (isAlphanumeric(peek())) {
+            advance();
+        }
+        addToken(IDENTIFIER);
     }
 
     private char advance() {
