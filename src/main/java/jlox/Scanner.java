@@ -72,6 +72,22 @@ class Scanner {
             case '>':
                 addToken(match('=') ? GREATER_EQUAL : GREATER);
                 break;
+            case '/':
+                if (match('/')) {
+                    // A comment goes until the end of the line.
+                    while (peek() != '\n' && !isAtEnd()) {
+                        advance();
+                    }
+                } else {
+                    addToken(SLASH);
+                }
+            case ' ':
+            case '\r':
+            case '\t':
+                break;
+            case '\n':
+                line++;
+                break;
             default:
                 Lox.error(line, String.format("Unexpected character '%c'", c));
                 break;
@@ -89,6 +105,10 @@ class Scanner {
             current++;
             return true;
         }
+    }
+
+    private char peek() {
+        return isAtEnd() ? '\0' : script.charAt(current);
     }
 
     private void addToken(TokenType type) {
