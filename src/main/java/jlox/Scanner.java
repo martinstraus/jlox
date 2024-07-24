@@ -88,10 +88,29 @@ class Scanner {
             case '\n':
                 line++;
                 break;
+            case '"':
+                string();
+                break;
             default:
                 Lox.error(line, String.format("Unexpected character '%c'", c));
                 break;
         }
+    }
+
+    private void string() {
+        while (peek() != '"' && !isAtEnd()) {
+            if (peek() == '\n') {
+                line++;
+            }
+            advance();
+        }
+        if (isAtEnd()) {
+            Lox.error(line, "Unterminated string.");
+            return;
+        }
+        advance();
+        String value = script.substring(start + 1, current - 1);
+        addToken(STRING, value);
     }
 
     private char advance() {
