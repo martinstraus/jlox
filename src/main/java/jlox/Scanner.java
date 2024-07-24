@@ -92,7 +92,11 @@ class Scanner {
                 string();
                 break;
             default:
-                Lox.error(line, String.format("Unexpected character '%c'", c));
+                if (isDigit(c)) {
+                    number();
+                } else {
+                    Lox.error(line, String.format("Unexpected character '%c'", c));
+                }
                 break;
         }
     }
@@ -113,6 +117,26 @@ class Scanner {
         addToken(STRING, value);
     }
 
+    private boolean isDigit(char c) {
+        return c >= '0' && c <= '9';
+    }
+
+    private void number() {
+        while (isDigit(peek())) {
+            advance();
+        }
+        // Look for fractional part
+        if (peek() == '.' && isDigit(peekNext())) {
+            // Consume the '.'
+            advance();
+            while (isDigit(peek())) {
+                advance();
+            }
+        }
+        double value = Double.parseDouble(script.substring(start, current));
+        addToken(NUMBER,value);
+    }
+
     private char advance() {
         return script.charAt(current++);
     }
@@ -128,6 +152,10 @@ class Scanner {
 
     private char peek() {
         return isAtEnd() ? '\0' : script.charAt(current);
+    }
+
+    private char peekNext() {
+        return (current + 1 >= script.length()) ? '\0' : script.charAt(current + 1);
     }
 
     private void addToken(TokenType type) {
