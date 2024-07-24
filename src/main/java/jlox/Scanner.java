@@ -3,7 +3,7 @@ package jlox;
 import static java.util.Collections.emptyList;
 import java.util.List;
 
-public class Scanner {
+class Scanner {
 
     private final String script;
 
