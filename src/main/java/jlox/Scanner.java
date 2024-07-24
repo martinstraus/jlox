@@ -1,10 +1,30 @@
 package jlox;
 
-import static java.util.Collections.emptyList;
 import java.util.*;
 import static jlox.TokenType.*;
 
 class Scanner {
+
+    private static final Map<String, TokenType> keywords = new HashMap();
+
+    static {
+        keywords.put("and", AND);
+        keywords.put("class", CLASS);
+        keywords.put("else", ELSE);
+        keywords.put("false", FALSE);
+        keywords.put("for", FOR);
+        keywords.put("fun", FUN);
+        keywords.put("if", IF);
+        keywords.put("nil", NIL);
+        keywords.put("or", OR);
+        keywords.put("print", PRINT);
+        keywords.put("return", RETURN);
+        keywords.put("super", SUPER);
+        keywords.put("this", THIS);
+        keywords.put("true", TRUE);
+        keywords.put("var", VAR);
+        keywords.put("while", WHILE);
+    }
 
     private final String script;
     private final List<Token> tokens = new ArrayList<>();
@@ -144,16 +164,21 @@ class Scanner {
             || (c >= 'A' && c <= 'Z')
             || c == '_';
     }
-    
+
     private boolean isAlphanumeric(char c) {
         return isAlpha(c) || isDigit(c);
     }
-    
+
     private void identifier() {
         while (isAlphanumeric(peek())) {
             advance();
         }
-        addToken(IDENTIFIER);
+        String text = script.substring(start, current);
+        TokenType tokenType = keywords.get(text);
+        if (tokenType == null) {
+            tokenType = IDENTIFIER;
+        }
+        addToken(tokenType);
     }
 
     private char advance() {
