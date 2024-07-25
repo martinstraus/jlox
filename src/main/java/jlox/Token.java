@@ -18,5 +18,9 @@ class Token {
     public String toString() {
         return type + " \"" + lexeme + "\" " + literal;
     }
+    
+    public String lexeme() {
+        return lexeme;
+    }
 
 }
