@@ -3,32 +3,66 @@ package jlox;
 import java.util.List;
 
 abstract class Expr {
+
     static class Binary extends Expr {
-        private final Expr left;
-        private final Token Operator;
-        private final Expr right;
-        Binary(Expr left,Token Operator,Expr right) {
+        final Expr left;
+        final Token operator;
+        final Expr right;
+        Binary(Expr left,Token operator,Expr right) {
             this.left = left;
-            this.Operator = Operator;
+            this.operator = operator;
             this.right = right;
         }
+        @Override
+        <T> T accept(Visitor<T> visitor) {
+            return visitor.visitBinaryExpr(this);
+        }
     }
+
     static class Grouping extends Expr {
-        private final Expr expression;
+        final Expr expression;
         Grouping(Expr expression) {
             this.expression = expression;
         }
+        @Override
+        <T> T accept(Visitor<T> visitor) {
+            return visitor.visitGroupingExpr(this);
+        }
     }
+
     static class Literal extends Expr {
-        private final Object value;
+        final Object value;
         Literal(Object value) {
             this.value = value;
         }
-    }
-    static class Unary extends Expr {
-        private final Token operator;
-        Unary(Token operator) {
-            this.operator = operator;
+        @Override
+        <T> T accept(Visitor<T> visitor) {
+            return visitor.visitLiteralExpr(this);
         }
     }
+
+    static class Unary extends Expr {
+        final Token operator;
+        final Expr expression;
+        Unary(Token operator,Expr expression) {
+            this.operator = operator;
+            this.expression = expression;
+        }
+        @Override
+        <T> T accept(Visitor<T> visitor) {
+            return visitor.visitUnaryExpr(this);
+        }
+    }
+
+    static interface Visitor<T> {
+
+        T visitBinaryExpr(Expr.Binary expr);
+        T visitGroupingExpr(Expr.Grouping expr);
+        T visitLiteralExpr(Expr.Literal expr);
+        T visitUnaryExpr(Expr.Unary expr);
+
+    }
+
+    abstract <T> T accept(Visitor<T> visitor);
+
 }
