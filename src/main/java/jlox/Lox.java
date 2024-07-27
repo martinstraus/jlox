@@ -4,11 +4,19 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.util.List;
+import static jlox.TokenType.*;
 
 public class Lox {
 
     private static boolean hadError;
 
+    static void error(Token token, String message) {
+        if (token.type() == EOF) {
+            report(token.line(), " at end", message);
+        } else {
+            report(token.line(), " at '" + token.lexeme() + "'", message);
+        }
+    }
     static void error(int line, String message) {
         report(line, "", message);
     }
@@ -54,11 +62,12 @@ public class Lox {
     }
 
     private static void interpret(String script) {
-        var scanner = new Scanner(script);
-        List<Token> tokens = scanner.scanTokens();
-        for (Token token : tokens) {
-            System.out.println(token);
+        List<Token> tokens = new Scanner(script).scanTokens();
+        Expr expression = new Parser(tokens).parse();
+        if (hadError) {
+            return;
         }
+        System.out.println(new AstPrinter().print(expression));
     }
 
 }

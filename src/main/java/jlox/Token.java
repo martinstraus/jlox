@@ -18,9 +18,20 @@ class Token {
     public String toString() {
         return type + " \"" + lexeme + "\" " + literal;
     }
-    
+
     public String lexeme() {
         return lexeme;
     }
 
+    public TokenType type() {
+        return type;
+    }
+
+    public Object literal() {
+        return literal;
+    }
+    
+    public int line() {
+        return line;
+    }
 }
