@@ -1,9 +1,10 @@
 package jlox;
 
+import java.util.List;
+import static jlox.Lox.stringify;
 import static jlox.TokenType.*;
 
-class Interpreter implements Expr.Visitor<Object> {
-
+class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     @Override
     public Object visitBinaryExpr(Expr.Binary expr) {
@@ -30,7 +31,7 @@ class Interpreter implements Expr.Visitor<Object> {
                 checkNumberOperand(expr.operator, left, right);
                 return (double) left - (double) right;
             case PLUS:
-                
+
                 if (left instanceof Double && right instanceof Double) {
                     return (double) left + (double) right;
                 } else if (left instanceof String && right instanceof String) {
@@ -103,4 +104,31 @@ class Interpreter implements Expr.Visitor<Object> {
             }
         }
     }
+
+    @Override
+    public Void visitExpressionStmt(Stmt.Expression expr) {
+        evaluate(expr.expression);
+        return null;
+    }
+
+    @Override
+    public Void visitPrintStmt(Stmt.Print expr) {
+        System.out.println(stringify(evaluate(expr.expression)));
+        return null;
+    }
+    
+    void interpret(List<Stmt> statements) {
+        try {
+            for (Stmt statement : statements){
+                execute(statement);
+            }
+        } catch (RuntimeError error) {
+            Lox.runtimeError(error);
+        }
+    }
+    
+    private void execute(Stmt stmt) {
+        stmt.accept(this);
+    }
+
 }

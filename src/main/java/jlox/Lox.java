@@ -78,18 +78,14 @@ public class Lox {
 
     private static void interpret(String script) {
         List<Token> tokens = new Scanner(script).scanTokens();
-        Expr expression = new Parser(tokens).parse();
+        List<Stmt> statements = new Parser(tokens).parse();
         if (hadError) {
             return;
         }
-        try {
-            System.out.println(stringify(interpreter.evaluate(expression)));
-        } catch (RuntimeError error) {
-            Lox.runtimeError(error);
-        }
+        interpreter.interpret(statements);
     }
 
-    private static String stringify(Object object) {
+    static String stringify(Object object) {
         if (object == null) {
             return "nil";
         }

@@ -49,6 +49,14 @@ public class ASTGenerator {
             )
         );
         generateAST(outputDir, "Expr", types);
+        generateAST(
+            outputDir, 
+            "Stmt", 
+            Arrays.asList(
+                new ASTType("Expression", new Field("Expr", "expression")),
+                new ASTType("Print", new Field("Expr", "expression"))
+            )
+        );
     }
 
     private static void generateAST(Path outputDir, String baseName, List<ASTType> types) throws IOException {
@@ -66,7 +74,7 @@ public class ASTGenerator {
             defineType(writer, baseName, type);
         }
         
-        generateVisitor(writer, "Expr", types);
+        generateVisitor(writer, baseName, types);
         writer.println("");
         
         // Abstract method for visitor.
@@ -100,7 +108,7 @@ public class ASTGenerator {
         // Visitor method.
         writer.println("        @Override");
         writer.println("        <T> T accept(Visitor<T> visitor) {");
-        writer.printf("            return visitor.visit%sExpr(this);\n", type.name());
+        writer.printf("            return visitor.visit%s%s(this);\n", type.name(), baseName);
         writer.println("        }");
         
         // End of class.
@@ -112,7 +120,7 @@ public class ASTGenerator {
         writer.println("    static interface Visitor<T> {");
         writer.println();
         for (ASTType type : types) {
-            writer.printf("        T visit%2$sExpr(%1$s.%2$s expr);\n", baseName, type.name());
+            writer.printf("        T visit%2$s%1$s(%1$s.%2$s expr);\n", baseName, type.name());
         }
         writer.println();
         writer.println("    }");
