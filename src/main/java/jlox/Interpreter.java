@@ -4,6 +4,7 @@ import static jlox.TokenType.*;
 
 class Interpreter implements Expr.Visitor<Object> {
 
+
     @Override
     public Object visitBinaryExpr(Expr.Binary expr) {
         Object left = evaluate(expr.left);
@@ -14,27 +15,34 @@ class Interpreter implements Expr.Visitor<Object> {
             case EQUAL_EQUAL:
                 return isEqual(left, right);
             case GREATER:
+                checkNumberOperand(expr.operator, left, right);
                 return (double) left > (double) right;
             case GREATER_EQUAL:
+                checkNumberOperand(expr.operator, left, right);
                 return (double) left >= (double) right;
             case LESS:
+                checkNumberOperand(expr.operator, left, right);
                 return (double) left < (double) right;
             case LESS_EQUAL:
+                checkNumberOperand(expr.operator, left, right);
                 return (double) left <= (double) right;
             case MINUS:
+                checkNumberOperand(expr.operator, left, right);
                 return (double) left - (double) right;
             case PLUS:
+                
                 if (left instanceof Double && right instanceof Double) {
                     return (double) left + (double) right;
                 } else if (left instanceof String && right instanceof String) {
                     return (String) left + (String) right;
                 } else {
-                    // This in an error.
-                    break;
+                    throw new RuntimeError(expr.operator, "Operands must be two numbers or two strings.");
                 }
             case SLASH:
+                checkNumberOperand(expr.operator, left, right);
                 return (double) left / (double) right;
             case STAR:
+                checkNumberOperand(expr.operator, left, right);
                 return (double) left * (double) right;
         }
         // Unreachable.
@@ -86,5 +94,13 @@ class Interpreter implements Expr.Visitor<Object> {
             return false;
         }
         return a.equals(b);
+    }
+
+    private void checkNumberOperand(Token operator, Object... operands) {
+        for (Object operand : operands) {
+            if (!(operand instanceof Double)) {
+                throw new RuntimeError(operator, "Operand must be a number.");
+            }
+        }
     }
 }

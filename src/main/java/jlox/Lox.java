@@ -9,6 +9,8 @@ import static jlox.TokenType.*;
 public class Lox {
 
     private static boolean hadError;
+    private static boolean hadRuntimeError;
+    private static final Interpreter interpreter = new Interpreter();
 
     static void error(Token token, String message) {
         if (token.type() == EOF) {
@@ -17,6 +19,12 @@ public class Lox {
             report(token.line(), " at '" + token.lexeme() + "'", message);
         }
     }
+
+    static void runtimeError(RuntimeError error) {
+        hadRuntimeError = true;
+        System.err.printf("[line %d] %s\n", error.line(), error.getMessage());
+    }
+
     static void error(int line, String message) {
         report(line, "", message);
     }
@@ -44,7 +52,13 @@ public class Lox {
                 Charset.defaultCharset()
             )
         );
-        return hadError ? 65 : 0;
+        if (hadError) {
+            return 66;
+        }
+        if (hadRuntimeError) {
+            return 70;
+        }
+        return 0;
     }
 
     private static void repl() throws IOException {
@@ -58,6 +72,7 @@ public class Lox {
             }
             interpret(line);
             hadError = false;
+            hadRuntimeError = false;
         }
     }
 
@@ -67,7 +82,25 @@ public class Lox {
         if (hadError) {
             return;
         }
-        System.out.println(new Interpreter().evaluate(expression));
+        try {
+            System.out.println(stringify(interpreter.evaluate(expression)));
+        } catch (RuntimeError error) {
+            Lox.runtimeError(error);
+        }
+    }
+
+    private static String stringify(Object object) {
+        if (object == null) {
+            return "nil";
+        }
+        if (object instanceof Double) {
+            String text = object.toString();
+            if (text.endsWith(".0")) {
+                text = text.substring(0, text.length() - 2);
+            }
+            return text;
+        }
+        return object.toString();
     }
 
 }
