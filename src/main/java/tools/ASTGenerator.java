@@ -46,7 +46,8 @@ public class ASTGenerator {
                 "Unary", 
                 new Field("Token", "operator"),
                 new Field("Expr", "expression")
-            )
+            ),
+            new ASTType("Variable", new Field("Token", "name"))
         );
         generateAST(outputDir, "Expr", types);
         generateAST(
@@ -54,7 +55,12 @@ public class ASTGenerator {
             "Stmt", 
             Arrays.asList(
                 new ASTType("Expression", new Field("Expr", "expression")),
-                new ASTType("Print", new Field("Expr", "expression"))
+                new ASTType("Print", new Field("Expr", "expression")),
+                new ASTType(
+                    "Var", 
+                    new Field("Token", "name"), 
+                    new Field("Expr", "initializer")
+                )
             )
         );
     }

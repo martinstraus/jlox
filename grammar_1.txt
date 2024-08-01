@@ -1,6 +1,10 @@
 // The grammar without any boilerplate
 
-program -> statement* EOF;
+program -> declaration* EOF;
+
+declaration -> varDecl | statement;
+
+varDecl -> "var" IDENTIFIER ("=" expression)? ";";
 
 statement -> exprStmt | printStmt;
 
@@ -10,7 +14,7 @@ printStmt -> "print" expression ";";
 
 expression -> literal | unary | binary | grouping;
 
-literal -> NUMBER | STRING | "true" | "false" | "nil";
+literal -> NUMBER | STRING | "true" | "false" | "nil" | IDENTIFIER;
 
 grouping -> "(" expression ")";
 

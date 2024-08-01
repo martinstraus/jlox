@@ -6,6 +6,8 @@ import static jlox.TokenType.*;
 
 class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
+    private Environment environment = new Environment();
+
     @Override
     public Object visitBinaryExpr(Expr.Binary expr) {
         Object left = evaluate(expr.left);
@@ -73,6 +75,11 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         return null;
     }
 
+    @Override
+    public Object visitVariableExpr(Expr.Variable expr) {
+        return environment.get(expr.name);
+    }
+
     public Object evaluate(Expr expr) {
         return expr.accept(this);
     }
@@ -116,17 +123,24 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         System.out.println(stringify(evaluate(expr.expression)));
         return null;
     }
-    
+
+    @Override
+    public Void visitVarStmt(Stmt.Var expr) {
+        Object value = expr.initializer != null ? evaluate(expr.initializer) : null;
+        environment.define(expr.name.lexeme(), value);
+        return null;
+    }
+
     void interpret(List<Stmt> statements) {
         try {
-            for (Stmt statement : statements){
+            for (Stmt statement : statements) {
                 execute(statement);
             }
         } catch (RuntimeError error) {
             Lox.runtimeError(error);
         }
     }
-    
+
     private void execute(Stmt stmt) {
         stmt.accept(this);
     }

@@ -54,12 +54,24 @@ abstract class Expr {
         }
     }
 
+    static class Variable extends Expr {
+        final Token name;
+        Variable(Token name) {
+            this.name = name;
+        }
+        @Override
+        <T> T accept(Visitor<T> visitor) {
+            return visitor.visitVariableExpr(this);
+        }
+    }
+
     static interface Visitor<T> {
 
         T visitBinaryExpr(Expr.Binary expr);
         T visitGroupingExpr(Expr.Grouping expr);
         T visitLiteralExpr(Expr.Literal expr);
         T visitUnaryExpr(Expr.Unary expr);
+        T visitVariableExpr(Expr.Variable expr);
 
     }
 

@@ -26,10 +26,24 @@ abstract class Stmt {
         }
     }
 
+    static class Var extends Stmt {
+        final Token name;
+        final Expr initializer;
+        Var(Token name,Expr initializer) {
+            this.name = name;
+            this.initializer = initializer;
+        }
+        @Override
+        <T> T accept(Visitor<T> visitor) {
+            return visitor.visitVarStmt(this);
+        }
+    }
+
     static interface Visitor<T> {
 
         T visitExpressionStmt(Stmt.Expression expr);
         T visitPrintStmt(Stmt.Print expr);
+        T visitVarStmt(Stmt.Var expr);
 
     }
 
