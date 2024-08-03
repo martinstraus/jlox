@@ -44,6 +44,12 @@ public class ASTGenerator {
             new ASTType("Grouping", new Field("Expr", "expression")),
             new ASTType("Literal", new Field("Object", "value")),
             new ASTType(
+                "Logical",
+                new Field("Expr", "left"),
+                new Field("Token", "operator"),
+                new Field("Expr", "right")
+            ),
+            new ASTType(
                 "Unary",
                 new Field("Token", "operator"),
                 new Field("Expr", "expression")
@@ -55,6 +61,12 @@ public class ASTGenerator {
             outputDir,
             "Stmt",
             Arrays.asList(
+                new ASTType(
+                    "If", 
+                    new Field("Expr", "condition"),
+                    new Field("Stmt", "thenBranch"),
+                    new Field("Stmt", "elseBranch")
+                ),
                 new ASTType("Block", new Field("List<Stmt>", "statements")),
                 new ASTType("Expression", new Field("Expr", "expression")),
                 new ASTType("Print", new Field("Expr", "expression")),

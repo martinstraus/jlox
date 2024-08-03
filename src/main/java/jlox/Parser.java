@@ -45,14 +45,25 @@ class Parser {
     }
 
     private Stmt statement() {
-        if (match(PRINT)) {
+        if (match(IF)) {
+            return ifStatement();
+        } else if (match(PRINT)) {
             return printStatement();
         } else if (match(LEFT_BRACE)) {
             return new Stmt.Block(block());
         }
         return expressionStatement();
     }
-    
+
+    private Stmt ifStatement() {
+        consume(LEFT_PAREN, "Expect '(' after 'if'.");
+        Expr condition = expression();
+        consume(RIGHT_PAREN, "Expect ')' after if condition.");
+        Stmt thenBranch = statement();
+        Stmt elseBranch = match(ELSE) ? statement() : null;
+        return new Stmt.If(condition, thenBranch, elseBranch);
+    }
+
     private List<Stmt> block() {
         List<Stmt> statements = new ArrayList<>();
         while (!check(RIGHT_BRACE) && !isAtEnd()) {
@@ -77,9 +88,9 @@ class Parser {
     private Expr expression() {
         return assignment();
     }
-    
+
     private Expr assignment() {
-        Expr expr = equality();
+        Expr expr = or();
         if (match(EQUAL)) {
             Token equals = previous();
             Expr value = assignment();
@@ -89,6 +100,26 @@ class Parser {
             } else {
                 error(equals, "Invalid assignment target.");
             }
+        }
+        return expr;
+    }
+
+    private Expr or() {
+        Expr expr = and();
+        while (match(OR)) {
+            Token operator = previous();
+            Expr right = and();
+            expr = new Expr.Logical(expr, operator, right);
+        }
+        return expr;
+    }
+
+    private Expr and() {
+        Expr expr = equality();
+        while (match(AND)) {
+            Token operator = previous();
+            Expr right = equality();
+            expr = new Expr.Logical(expr, operator, right);
         }
         return expr;
     }
