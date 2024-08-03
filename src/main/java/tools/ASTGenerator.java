@@ -55,6 +55,7 @@ public class ASTGenerator {
             outputDir,
             "Stmt",
             Arrays.asList(
+                new ASTType("Block", new Field("List<Stmt>", "statements")),
                 new ASTType("Expression", new Field("Expr", "expression")),
                 new ASTType("Print", new Field("Expr", "expression")),
                 new ASTType(

@@ -1,5 +1,13 @@
 // The grammar,refactored for implementing precedence and eliminating ambiguity.
 
+statement -> exprStmt | printStmt | block;
+
+exprStmt -> expression ";";
+
+printStmt -> "print" expression ";"
+
+block -> "{" declaration* "}";
+
 expression -> assignment;
 
 assignment -> IDENTIFIER "=" assignment | expression;

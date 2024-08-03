@@ -4,6 +4,17 @@ import java.util.List;
 
 abstract class Stmt {
 
+    static class Block extends Stmt {
+        final List<Stmt> statements;
+        Block(List<Stmt> statements) {
+            this.statements = statements;
+        }
+        @Override
+        <T> T accept(Visitor<T> visitor) {
+            return visitor.visitBlockStmt(this);
+        }
+    }
+
     static class Expression extends Stmt {
         final Expr expression;
         Expression(Expr expression) {
@@ -41,6 +52,7 @@ abstract class Stmt {
 
     static interface Visitor<T> {
 
+        T visitBlockStmt(Stmt.Block stmt);
         T visitExpressionStmt(Stmt.Expression stmt);
         T visitPrintStmt(Stmt.Print stmt);
         T visitVarStmt(Stmt.Var stmt);
