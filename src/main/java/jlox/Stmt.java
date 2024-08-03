@@ -41,9 +41,9 @@ abstract class Stmt {
 
     static interface Visitor<T> {
 
-        T visitExpressionStmt(Stmt.Expression expr);
-        T visitPrintStmt(Stmt.Print expr);
-        T visitVarStmt(Stmt.Var expr);
+        T visitExpressionStmt(Stmt.Expression stmt);
+        T visitPrintStmt(Stmt.Print stmt);
+        T visitVarStmt(Stmt.Var stmt);
 
     }
 

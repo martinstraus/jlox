@@ -4,6 +4,19 @@ import java.util.List;
 
 abstract class Expr {
 
+    static class Assign extends Expr {
+        final Token name;
+        final Expr value;
+        Assign(Token name,Expr value) {
+            this.name = name;
+            this.value = value;
+        }
+        @Override
+        <T> T accept(Visitor<T> visitor) {
+            return visitor.visitAssignExpr(this);
+        }
+    }
+
     static class Binary extends Expr {
         final Expr left;
         final Token operator;
@@ -67,6 +80,7 @@ abstract class Expr {
 
     static interface Visitor<T> {
 
+        T visitAssignExpr(Expr.Assign expr);
         T visitBinaryExpr(Expr.Binary expr);
         T visitGroupingExpr(Expr.Grouping expr);
         T visitLiteralExpr(Expr.Literal expr);

@@ -7,6 +7,11 @@ public class AstPrinter implements Expr.Visitor<String> {
     }
 
     @Override
+    public String visitAssignExpr(Expr.Assign expr) {
+        return parenthezise(expr.name.lexeme(), expr.value);
+    }
+
+    @Override
     public String visitBinaryExpr(Expr.Binary expr) {
         return parenthezise(expr.operator.lexeme(), expr.left, expr.right);
     }
@@ -18,7 +23,7 @@ public class AstPrinter implements Expr.Visitor<String> {
 
     @Override
     public String visitLiteralExpr(Expr.Literal expr) {
-        return expr.value == null 
+        return expr.value == null
             ? "nil"
             : expr.value.toString();
     }

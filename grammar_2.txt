@@ -1,6 +1,8 @@
 // The grammar,refactored for implementing precedence and eliminating ambiguity.
 
-expression -> equality;
+expression -> assignment;
+
+assignment -> IDENTIFIER "=" assignment | expression;
 
 equality -> comparison (("==" | "!=") comparison)*;
 

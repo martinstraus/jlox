@@ -34,6 +34,7 @@ public class ASTGenerator {
         }
         Path outputDir = Paths.get(args[0]);
         List<ASTType> types = Arrays.asList(
+            new ASTType("Assign", new Field("Token", "name"), new Field("Expr", "value")),
             new ASTType(
                 "Binary",
                 new Field("Expr", "left"),
@@ -43,7 +44,7 @@ public class ASTGenerator {
             new ASTType("Grouping", new Field("Expr", "expression")),
             new ASTType("Literal", new Field("Object", "value")),
             new ASTType(
-                "Unary", 
+                "Unary",
                 new Field("Token", "operator"),
                 new Field("Expr", "expression")
             ),
@@ -51,14 +52,14 @@ public class ASTGenerator {
         );
         generateAST(outputDir, "Expr", types);
         generateAST(
-            outputDir, 
-            "Stmt", 
+            outputDir,
+            "Stmt",
             Arrays.asList(
                 new ASTType("Expression", new Field("Expr", "expression")),
                 new ASTType("Print", new Field("Expr", "expression")),
                 new ASTType(
-                    "Var", 
-                    new Field("Token", "name"), 
+                    "Var",
+                    new Field("Token", "name"),
                     new Field("Expr", "initializer")
                 )
             )
@@ -74,19 +75,19 @@ public class ASTGenerator {
         writer.println("");
         writer.printf("abstract class %s {\n", baseName);
         writer.println("");
-        
+
         // Types.
         for (ASTType type : types) {
             defineType(writer, baseName, type);
         }
-        
+
         generateVisitor(writer, baseName, types);
         writer.println("");
-        
+
         // Abstract method for visitor.
         writer.println("    abstract <T> T accept(Visitor<T> visitor);");
         writer.println("");
-        
+
         // End of class.
         writer.println("}");
         writer.close();
@@ -110,13 +111,13 @@ public class ASTGenerator {
             writer.println("            " + field.assignment());
         }
         writer.println("        }");
-        
+
         // Visitor method.
         writer.println("        @Override");
         writer.println("        <T> T accept(Visitor<T> visitor) {");
         writer.printf("            return visitor.visit%s%s(this);\n", type.name(), baseName);
         writer.println("        }");
-        
+
         // End of class.
         writer.println("    }");
         writer.println("");
@@ -126,7 +127,7 @@ public class ASTGenerator {
         writer.println("    static interface Visitor<T> {");
         writer.println();
         for (ASTType type : types) {
-            writer.printf("        T visit%2$s%1$s(%1$s.%2$s expr);\n", baseName, type.name());
+            writer.printf("        T visit%2$s%1$s(%1$s.%2$s %3$s);\n", baseName, type.name(), baseName.toLowerCase());
         }
         writer.println();
         writer.println("    }");
