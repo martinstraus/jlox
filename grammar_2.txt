@@ -1,6 +1,6 @@
 // The grammar,refactored for implementing precedence and eliminating ambiguity.
 
-statement -> exprStmt | ifStmt | printStmt | whileStmt | block;
+statement -> exprStmt | ifStmt | printStmt | whileStmt | block | forStmt;
 
 exprStmt -> expression ";";
 
@@ -11,6 +11,12 @@ printStmt -> "print" expression ";"
 whileStmt -> "while" "(" expression ")" statement;
 
 block -> "{" declaration* "}";
+
+forStmt -> "for" "(" (varDecl | exprStmt | ";") 
+            expression? ";" 
+            expression? ")"
+            statement;
+;
 
 expression -> assignment;
 
