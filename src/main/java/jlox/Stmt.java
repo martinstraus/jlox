@@ -65,6 +65,19 @@ abstract class Stmt {
         }
     }
 
+    static class While extends Stmt {
+        final Expr condition;
+        final Stmt body;
+        While(Expr condition,Stmt body) {
+            this.condition = condition;
+            this.body = body;
+        }
+        @Override
+        <T> T accept(Visitor<T> visitor) {
+            return visitor.visitWhileStmt(this);
+        }
+    }
+
     static interface Visitor<T> {
 
         T visitIfStmt(Stmt.If stmt);
@@ -72,6 +85,7 @@ abstract class Stmt {
         T visitExpressionStmt(Stmt.Expression stmt);
         T visitPrintStmt(Stmt.Print stmt);
         T visitVarStmt(Stmt.Var stmt);
+        T visitWhileStmt(Stmt.While stmt);
 
     }
 

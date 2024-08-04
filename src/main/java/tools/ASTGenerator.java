@@ -74,6 +74,11 @@ public class ASTGenerator {
                     "Var",
                     new Field("Token", "name"),
                     new Field("Expr", "initializer")
+                ),
+                new ASTType(
+                    "While", 
+                    new Field("Expr", "condition"), 
+                    new Field("Stmt", "body")
                 )
             )
         );
