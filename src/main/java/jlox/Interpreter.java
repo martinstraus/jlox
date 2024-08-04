@@ -1,12 +1,35 @@
 package jlox;
 
+import java.util.ArrayList;
 import java.util.List;
 import static jlox.Lox.stringify;
 import static jlox.TokenType.*;
 
 class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
-    private Environment environment = new Environment();
+    private final Environment globals = new Environment();
+    private Environment environment = globals;
+
+    Interpreter() {
+        globals.define("clock", new LoxCallable() {
+            @Override
+            public Object call(Interpreter interpreter, List<Object> arguments) {
+                return (double) System.currentTimeMillis() / 1000.0;
+            }
+
+            @Override
+            public int arity() {
+                return 0;
+            }
+
+            @Override
+            public String toString() {
+                return "<native fn>";
+            }
+            
+            
+        });
+    }
 
     @Override
     public Object visitAssignExpr(Expr.Assign expr) {
@@ -57,6 +80,27 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         }
         // Unreachable.
         return null;
+    }
+
+    @Override
+    public Object visitCallExpr(Expr.Call expr) {
+        Object callee = evaluate(expr.callee);
+        List<Object> arguments = new ArrayList<>();
+        for (Expr argument : expr.arguments) {
+            arguments.add(evaluate(argument));
+        }
+
+        if (!(callee instanceof LoxCallable)) {
+            throw new RuntimeError(expr.paren, "Can only call functions and classes.");
+        }
+        LoxCallable function = (LoxCallable) callee;
+        if (arguments.size() != function.arity()) {
+            throw new RuntimeError(
+                expr.paren,
+                "Expected %d arguments but got %d.".formatted(function.arity(), arguments.size())
+            );
+        }
+        return function.call(this, arguments);
     }
 
     @Override
@@ -174,11 +218,11 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     @Override
     public Void visitWhileStmt(Stmt.While stmt) {
-        while(isTruthy(evaluate(stmt.condition))) {
+        while (isTruthy(evaluate(stmt.condition))) {
             execute(stmt.body);
         }
         return null;
-    }    
+    }
 
     @Override
     public Void visitVarStmt(Stmt.Var expr) {

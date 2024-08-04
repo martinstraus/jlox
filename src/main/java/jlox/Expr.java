@@ -32,6 +32,21 @@ abstract class Expr {
         }
     }
 
+    static class Call extends Expr {
+        final Expr callee;
+        final Token paren;
+        final List<Expr> arguments;
+        Call(Expr callee,Token paren,List<Expr> arguments) {
+            this.callee = callee;
+            this.paren = paren;
+            this.arguments = arguments;
+        }
+        @Override
+        <T> T accept(Visitor<T> visitor) {
+            return visitor.visitCallExpr(this);
+        }
+    }
+
     static class Grouping extends Expr {
         final Expr expression;
         Grouping(Expr expression) {
@@ -97,6 +112,7 @@ abstract class Expr {
 
         T visitAssignExpr(Expr.Assign expr);
         T visitBinaryExpr(Expr.Binary expr);
+        T visitCallExpr(Expr.Call expr);
         T visitGroupingExpr(Expr.Grouping expr);
         T visitLiteralExpr(Expr.Literal expr);
         T visitLogicalExpr(Expr.Logical expr);

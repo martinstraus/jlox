@@ -41,6 +41,12 @@ public class ASTGenerator {
                 new Field("Token", "operator"),
                 new Field("Expr", "right")
             ),
+            new ASTType(
+                "Call", 
+                new Field("Expr", "callee"),
+                new Field("Token", "paren"),
+                new Field("List<Expr>", "arguments")
+            ),
             new ASTType("Grouping", new Field("Expr", "expression")),
             new ASTType("Literal", new Field("Object", "value")),
             new ASTType(
