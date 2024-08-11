@@ -68,6 +68,12 @@ public class ASTGenerator {
             "Stmt",
             Arrays.asList(
                 new ASTType(
+                    "Function",
+                    new Field("Token", "name"),
+                    new Field("List<Token>", "params"),
+                    new Field("List<Stmt>", "body")
+                ),
+                new ASTType(
                     "If", 
                     new Field("Expr", "condition"),
                     new Field("Stmt", "thenBranch"),
@@ -76,6 +82,11 @@ public class ASTGenerator {
                 new ASTType("Block", new Field("List<Stmt>", "statements")),
                 new ASTType("Expression", new Field("Expr", "expression")),
                 new ASTType("Print", new Field("Expr", "expression")),
+                new ASTType(
+                    "Return", 
+                    new Field("Token", "keyword"),
+                    new Field("Expr", "value")
+                ),
                 new ASTType(
                     "Var",
                     new Field("Token", "name"),

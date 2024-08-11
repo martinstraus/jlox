@@ -1,6 +1,16 @@
 // The grammar,refactored for implementing precedence and eliminating ambiguity.
 
-statement -> exprStmt | ifStmt | printStmt | whileStmt | block | forStmt;
+declaration -> funDecl | varDecl | statement;
+
+funDecl -> "fun" function;
+
+function -> IDENTIFIER "(" parameters? ")" block;
+
+parameters -> IDENTIFIER ( "," IDENTIFIER )*;
+
+statement -> exprStmt | forStmt | ifStmt | printStmt | returnStmt | whileStmt | block;
+
+returnStmt -> "return" expression? ";";
 
 exprStmt -> expression ";";
 

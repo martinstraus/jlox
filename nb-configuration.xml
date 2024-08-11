@@ -11,6 +11,7 @@ Without this configuration present, some functionality in the IDE may be limited
             <configuration id="Generate AST" profiles=""/>
             <configuration id="REPL" profiles=""/>
             <configuration id="fibonacci" profiles=""/>
+            <configuration id="makeCounter" profiles=""/>
         </configurations>
     </config-data>
 </project-shared-configuration>

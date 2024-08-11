@@ -30,6 +30,10 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
             
         });
     }
+    
+    Environment globals() {
+        return globals;
+    }
 
     @Override
     public Object visitAssignExpr(Expr.Assign expr) {
@@ -192,7 +196,7 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         return null;
     }
 
-    private void executeBlock(List<Stmt> statements, Environment environment) {
+    void executeBlock(List<Stmt> statements, Environment environment) {
         Environment previous = this.environment;
         try {
             this.environment = environment;
@@ -211,9 +215,21 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
 
     @Override
+    public Void visitFunctionStmt(Stmt.Function stmt) {
+        environment.define(stmt.name.lexeme(), new LoxFunction(stmt, environment));
+        return null;
+    }
+    
+    @Override
     public Void visitPrintStmt(Stmt.Print expr) {
         System.out.println(stringify(evaluate(expr.expression)));
         return null;
+    }
+
+    @Override
+    public Void visitReturnStmt(Stmt.Return stmt) {
+        Object value = (stmt.value != null) ? evaluate(stmt.value) : null;
+        throw new Return(value);
     }
 
     @Override
