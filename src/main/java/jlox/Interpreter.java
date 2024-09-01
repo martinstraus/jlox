@@ -1,13 +1,16 @@
 package jlox;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import static jlox.Lox.stringify;
 import static jlox.TokenType.*;
 
 class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     private final Environment globals = new Environment();
+    private final Map<Expr, Integer> locals = new HashMap<>();
     private Environment environment = globals;
 
     Interpreter() {
@@ -26,11 +29,10 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
             public String toString() {
                 return "<native fn>";
             }
-            
-            
+
         });
     }
-    
+
     Environment globals() {
         return globals;
     }
@@ -38,7 +40,12 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     @Override
     public Object visitAssignExpr(Expr.Assign expr) {
         Object value = evaluate(expr.value);
-        environment.assign(expr.name, value);
+        Integer distance = locals.get(expr);
+        if (distance != null) {
+            environment.assignAt(distance, expr.name, value);
+        } else {
+            globals.assign(expr.name, value);
+        }
         return value;
     }
 
@@ -145,7 +152,16 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     @Override
     public Object visitVariableExpr(Expr.Variable expr) {
-        return environment.get(expr.name);
+        return lookUpVariable(expr.name, expr);
+    }
+    
+    private Object lookUpVariable(Token name, Expr expr) {
+        Integer distance = locals.get(expr);
+        if (distance != null) {
+            return environment.getAt(distance, name.lexeme());
+        } else {
+            return globals.get(name);
+        }
     }
 
     public Object evaluate(Expr expr) {
@@ -219,7 +235,7 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         environment.define(stmt.name.lexeme(), new LoxFunction(stmt, environment));
         return null;
     }
-    
+
     @Override
     public Void visitPrintStmt(Stmt.Print expr) {
         System.out.println(stringify(evaluate(expr.expression)));
@@ -259,6 +275,10 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     private void execute(Stmt stmt) {
         stmt.accept(this);
+    }
+
+    void resolve(Expr expr, int depth) {
+        locals.put(expr, depth);
     }
 
 }
