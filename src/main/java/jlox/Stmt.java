@@ -45,6 +45,19 @@ abstract class Stmt {
         }
     }
 
+    static class Class extends Stmt {
+        final Token name;
+        final List<Stmt.Function> methods;
+        Class(Token name,List<Stmt.Function> methods) {
+            this.name = name;
+            this.methods = methods;
+        }
+        @Override
+        <T> T accept(Visitor<T> visitor) {
+            return visitor.visitClassStmt(this);
+        }
+    }
+
     static class Expression extends Stmt {
         final Expr expression;
         Expression(Expr expression) {
@@ -111,6 +124,7 @@ abstract class Stmt {
         T visitFunctionStmt(Stmt.Function stmt);
         T visitIfStmt(Stmt.If stmt);
         T visitBlockStmt(Stmt.Block stmt);
+        T visitClassStmt(Stmt.Class stmt);
         T visitExpressionStmt(Stmt.Expression stmt);
         T visitPrintStmt(Stmt.Print stmt);
         T visitReturnStmt(Stmt.Return stmt);

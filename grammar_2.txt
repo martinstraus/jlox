@@ -1,6 +1,8 @@
 // The grammar,refactored for implementing precedence and eliminating ambiguity.
 
-declaration -> funDecl | varDecl | statement;
+declaration -> classDecl | funDecl | varDecl | statement;
+
+classDecl -> "class" IDENTIFIER "{" function* "}";
 
 funDecl -> "fun" function;
 

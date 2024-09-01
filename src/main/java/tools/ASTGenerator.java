@@ -80,6 +80,11 @@ public class ASTGenerator {
                     new Field("Stmt", "elseBranch")
                 ),
                 new ASTType("Block", new Field("List<Stmt>", "statements")),
+                new ASTType(
+                    "Class", 
+                    new Field("Token", "name"),
+                    new Field("List<Stmt.Function>", "methods")
+                ),
                 new ASTType("Expression", new Field("Expr", "expression")),
                 new ASTType("Print", new Field("Expr", "expression")),
                 new ASTType(
