@@ -47,6 +47,19 @@ abstract class Expr {
         }
     }
 
+    static class Get extends Expr {
+        final Expr object;
+        final Token name;
+        Get(Expr object,Token name) {
+            this.object = object;
+            this.name = name;
+        }
+        @Override
+        <T> T accept(Visitor<T> visitor) {
+            return visitor.visitGetExpr(this);
+        }
+    }
+
     static class Grouping extends Expr {
         final Expr expression;
         Grouping(Expr expression) {
@@ -84,6 +97,21 @@ abstract class Expr {
         }
     }
 
+    static class Set extends Expr {
+        final Expr object;
+        final Token name;
+        final Expr value;
+        Set(Expr object,Token name,Expr value) {
+            this.object = object;
+            this.name = name;
+            this.value = value;
+        }
+        @Override
+        <T> T accept(Visitor<T> visitor) {
+            return visitor.visitSetExpr(this);
+        }
+    }
+
     static class Unary extends Expr {
         final Token operator;
         final Expr expression;
@@ -113,9 +141,11 @@ abstract class Expr {
         T visitAssignExpr(Expr.Assign expr);
         T visitBinaryExpr(Expr.Binary expr);
         T visitCallExpr(Expr.Call expr);
+        T visitGetExpr(Expr.Get expr);
         T visitGroupingExpr(Expr.Grouping expr);
         T visitLiteralExpr(Expr.Literal expr);
         T visitLogicalExpr(Expr.Logical expr);
+        T visitSetExpr(Expr.Set expr);
         T visitUnaryExpr(Expr.Unary expr);
         T visitVariableExpr(Expr.Variable expr);
 

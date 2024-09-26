@@ -47,6 +47,11 @@ public class ASTGenerator {
                 new Field("Token", "paren"),
                 new Field("List<Expr>", "arguments")
             ),
+            new ASTType(
+                "Get",
+                new Field("Expr", "object"),
+                new Field("Token", "name")
+            ),
             new ASTType("Grouping", new Field("Expr", "expression")),
             new ASTType("Literal", new Field("Object", "value")),
             new ASTType(
@@ -54,6 +59,12 @@ public class ASTGenerator {
                 new Field("Expr", "left"),
                 new Field("Token", "operator"),
                 new Field("Expr", "right")
+            ),
+            new ASTType(
+                "Set",
+                new Field("Expr", "object"),
+                new Field("Token", "name"),
+                new Field("Expr", "value")
             ),
             new ASTType(
                 "Unary",
