@@ -1,6 +1,6 @@
 class Bacon { 
-   echo() {
-        print "hello!";
+    echo() {
+        print this;
     }
 }
 
