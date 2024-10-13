@@ -43,22 +43,27 @@ class Parser {
             return null;
         }
     }
-    
+
     private Stmt classDeclaration() {
         Token name = consume(IDENTIFIER, "Expect class name.");
+        Expr.Variable superclass = null;
+        if (match(LESS)) {
+            consume(IDENTIFIER, "Expect superclass name.");
+            superclass = new Expr.Variable(previous());
+        }
         consume(LEFT_BRACE, "Expect '{' before class body.");
         List<Stmt.Function> methods = new ArrayList<>();
-        while(!check(RIGHT_BRACE) && !isAtEnd()) {
+        while (!check(RIGHT_BRACE) && !isAtEnd()) {
             methods.add(function("method"));
         }
         consume(RIGHT_BRACE, "Expect '}' after class body.");
-        return new Stmt.Class(name, methods);
+        return new Stmt.Class(name, superclass, methods);
     }
-    
-    private Stmt.Function function(String kind){
+
+    private Stmt.Function function(String kind) {
         Token name = consume(IDENTIFIER, "Expect %s name.".formatted(kind));
         consume(LEFT_PAREN, "Expect '(' after %s name.".formatted(kind));
-        
+
         // Recognize parameters list.
         List<Token> parameters = new ArrayList<>();
         if (!check(RIGHT_PAREN)) {
@@ -70,7 +75,7 @@ class Parser {
             } while (match(COMMA));
         }
         consume(RIGHT_PAREN, "Expect ')' after parameters.");
-        
+
         // Recognize body
         consume(LEFT_BRACE, "Expect '{' before %s body.".formatted(kind));
         List<Stmt> body = block();
@@ -100,7 +105,7 @@ class Parser {
         }
         return expressionStatement();
     }
-    
+
     private Stmt returnStatement() {
         Token keyword = previous();
         Expr value = null;
@@ -201,11 +206,10 @@ class Parser {
             if (expr instanceof Expr.Variable) {
                 Token name = ((Expr.Variable) expr).name;
                 return new Expr.Assign(name, value);
-            } else if (expr instanceof Expr.Get) { 
+            } else if (expr instanceof Expr.Get) {
                 Expr.Get get = (Expr.Get) expr;
                 return new Expr.Set(get.object, get.name, value);
-            }
-            else {
+            } else {
                 error(equals, "Invalid assignment target.");
             }
         }

@@ -10,6 +10,7 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
     private enum FunctionType {
         NONE,
         FUNCTION,
+        INITIALIZER,
         METHOD
     }
 
@@ -46,10 +47,18 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
         currentClass = ClassType.CLASS;
         declare(stmt.name);
         define(stmt.name);
+        if (stmt.superclass != null && stmt.name.lexeme().equals(stmt.superclass.name.lexeme())) {
+            Lox.error(stmt.superclass.name, "A class can't inherit from itself.");
+        }
+        if (stmt.superclass != null) {
+            resolve(stmt.superclass);
+        }
         beginScope();
         scopes.peek().put("this", true);
         for (Stmt.Function method : stmt.methods) {
-            FunctionType declaration = FunctionType.METHOD;
+            FunctionType declaration = method.name.lexeme().equals("init")
+                ? FunctionType.INITIALIZER
+                : FunctionType.METHOD;
             resolveFunction(method, declaration);
         }
         endScope();
@@ -91,6 +100,11 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
     public Void visitReturnStmt(Stmt.Return stmt) {
         if (currentFunction == FunctionType.NONE) {
             Lox.error(stmt.keyword, "Can't return from top-level code.");
+        }
+        if (stmt.value != null) {
+            if (currentFunction == FunctionType.INITIALIZER) {
+                Lox.error(stmt.keyword, "Can't return a value from an initializer.");
+            }
         }
         resolve(stmt.value);
         return null;

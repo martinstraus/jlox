@@ -1,7 +1,11 @@
-class Bacon { 
+class Food {
     echo() {
         print this;
     }
+}
+
+class Bacon < Food {
+    
 }
 
 Bacon().echo();

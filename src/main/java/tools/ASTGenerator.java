@@ -95,6 +95,7 @@ public class ASTGenerator {
                 new ASTType(
                     "Class", 
                     new Field("Token", "name"),
+                    new Field("Expr.Variable", "superclass"),
                     new Field("List<Stmt.Function>", "methods")
                 ),
                 new ASTType("Expression", new Field("Expr", "expression")),
