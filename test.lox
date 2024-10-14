@@ -1,11 +1,14 @@
 class Food {
     echo() {
-        print this;
+        print "from super";
     }
 }
 
 class Bacon < Food {
-    
+    echo() {
+        print "from base";
+        super.echo();
+    }
 }
 
 Bacon().echo();

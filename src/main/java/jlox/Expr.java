@@ -112,6 +112,19 @@ abstract class Expr {
         }
     }
 
+    static class Super extends Expr {
+        final Token keyword;
+        final Token method;
+        Super(Token keyword,Token method) {
+            this.keyword = keyword;
+            this.method = method;
+        }
+        @Override
+        <T> T accept(Visitor<T> visitor) {
+            return visitor.visitSuperExpr(this);
+        }
+    }
+
     static class This extends Expr {
         final Token keyword;
         This(Token keyword) {
@@ -157,6 +170,7 @@ abstract class Expr {
         T visitLiteralExpr(Expr.Literal expr);
         T visitLogicalExpr(Expr.Logical expr);
         T visitSetExpr(Expr.Set expr);
+        T visitSuperExpr(Expr.Super expr);
         T visitThisExpr(Expr.This expr);
         T visitUnaryExpr(Expr.Unary expr);
         T visitVariableExpr(Expr.Variable expr);

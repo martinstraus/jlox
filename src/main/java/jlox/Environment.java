@@ -55,4 +55,8 @@ public class Environment {
             throw new RuntimeError(name, "Undefined variable '%s'.".formatted(name.lexeme()));
         }
     }
+    
+    Environment enclosing() {
+        return enclosing;
+    }
 }

@@ -66,6 +66,11 @@ public class ASTGenerator {
                 new Field("Token", "name"),
                 new Field("Expr", "value")
             ),
+            new ASTType(
+                "Super", 
+                new Field("Token", "keyword"),
+                new Field("Token", "method")
+            ),
             new ASTType("This",new Field("Token", "keyword")),
             new ASTType(
                 "Unary",
